@@ -98,7 +98,7 @@ data "cloudinit_config" "bastion-host-cloudinit" {
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/templates/bastion-host-cloudinit.yaml.tftpl", var.cloudinit_userdata)
+    content = templatefile("${path.module}/templates/bastion-host-cloudinit.yaml.tftpl", {cloudinit_userdata = var.cloudinit_userdata})
   }
 }
 

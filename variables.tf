@@ -80,7 +80,13 @@ variable "cloudinit_userdata" {
   description = "Cloudinit user data"
   type = object({
     groups = optional(list(string))
-    users = optional(list(object))
+    users = optional(list(object({
+      name = string
+      primary_group = optional(string)
+      shell = optional(string)
+      sudo = optional(string)
+      ssh-authorized-keys = optional(string)
+    })))
   })
   default = {}
 }

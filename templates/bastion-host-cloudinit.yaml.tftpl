@@ -1,0 +1,21 @@
+# cloud-config
+
+%{ if cloudinit_userdata.groups != "" ~}
+groups:
+%{ for group in cloudinit_userdata.groups ~}
+  - ${group}
+%{ endfor ~}
+%{ endif ~}
+
+
+%{ if cloudinit_userdata.users != "" ~}
+users:
+  - default:
+%{ for user in cloudinit_userdata.users ~}
+  - name: ${user.name}
+    %{if user.primary_group != ""}primary_group: ${user.primary_group} %{endif}
+    %{if user.shell != ""}shell: ${user.shell} %{endif}
+    %{if user.sudo != ""}sudo: ${user.sudo} %{endif}
+    %{if user.ssh-authorized-keys != ""}ssh-authorized-keys: ${user.ssh-authorized-keys} %{endif}
+%{ endfor ~}
+%{ endif ~}

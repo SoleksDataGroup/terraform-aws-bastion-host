@@ -1,5 +1,5 @@
-// Module: aws/bastion-host
-//
+// Module: terraform-aws-bastion-host
+// Description: main code
 
 
 resource "aws_security_group" "bastion-host-sg" {
@@ -37,6 +37,24 @@ resource "aws_security_group" "bastion-host-sg" {
   }
 }
 
+resource "aws_iam_role" "bastion-host-iam-role" {
+  name = "bastion-host-iam-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
 resource "aws_iam_policy" "bastion-host-iam-policy" {
   name        = "bastion-host-iam-policy"
   description = "Provides permissions to get an access to S3 bucket"
@@ -57,23 +75,6 @@ resource "aws_iam_policy" "bastion-host-iam-policy" {
   })
 }
 
-resource "aws_iam_role" "bastion-host-iam-role" {
-  name = "bastion-host-iam-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
 
 resource "aws_iam_policy_attachment" "bastion-host-iam-attachment" {
   name       = "bastion-host-iam-attachment"
@@ -97,7 +98,7 @@ data "cloudinit_config" "bastion-host-cloudinit" {
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/templates/bastion-host-cloudinit.yaml.tpl", {})
+    content = templatefile("${path.module}/templates/bastion-host-cloudinit.yaml.tftpl", var.cloudinit_userdata)
   }
 }
 
@@ -117,7 +118,7 @@ resource "aws_instance" "bastion-host" {
 
   tags = {
     Name = format("%s%02g", var.name_prefix, count.index)
-    Role = "bastion"
+    Role = "bastion-host"
   }
 }
 

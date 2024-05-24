@@ -1,4 +1,4 @@
-// Module: aws/bastion-host
+// Module: terraform-aws-bastion-host
 // Descriprion: module input variables
 //
 
@@ -74,4 +74,13 @@ variable "security_group_egress" {
     self = optional(string)
   }))
   default = []
+}
+
+variable "cloudinit_userdata" {
+  description = "Cloudinit user data"
+  type = object({
+    groups = optional(list(string))
+    users = optional(list(object))
+  })
+  default = {}
 }

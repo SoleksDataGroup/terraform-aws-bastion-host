@@ -96,8 +96,8 @@ module "cloudinit" {
   source "SoleksDataGroup/cloudinit/aws"
   version = "0.0.1"
 
-  users = var.cloudinit.users
-  groups = var.cloudinit.groups
+  users = var.cloudinit_userdata.users
+  groups = var.cloudinit_userdata.groups
 }
 
 data "cloudinit_config" "bastion-host-cloudinit" {

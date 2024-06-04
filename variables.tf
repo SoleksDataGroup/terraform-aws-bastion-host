@@ -76,17 +76,8 @@ variable "security_group_egress" {
   default = []
 }
 
-variable "cloudinit_userdata" {
-  description = "Cloudinit user data"
-  type = object({
-    groups = optional(list(string))
-    users = optional(list(object({
-      name = string
-      primary_group = optional(string)
-      shell = optional(string)
-      sudo = optional(string)
-      ssh-authorized-keys = optional(string)
-    })))
-  })
-  default = {}
+variable "user_data_base64" {
+  description = "Cloudinit userdata in base64 format"
+  type = string
+  default = ""
 }

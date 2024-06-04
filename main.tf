@@ -92,24 +92,6 @@ data "aws_ami" "bastion-host-ami" {
   owners = ["self"]
 }
 
-module "cloudinit" {
-  source = "SoleksDataGroup/cloudinit/aws"
-  version = "0.0.2"
-
-  users = var.cloudinit_userdata.users
-  groups = var.cloudinit_userdata.groups
-}
-
-data "cloudinit_config" "bastion-host-cloudinit" {
-  gzip = true
-  base64_encode = true
-
-  part {
-    content_type = "text/cloud-config"
-    content = module.cloudinit.userdata
-  }
-}
-
 resource "aws_instance" "bastion-host" {
   count = length(var.subnet_ids)
 
@@ -122,7 +104,7 @@ resource "aws_instance" "bastion-host" {
 
   vpc_security_group_ids = [aws_security_group.bastion-host-sg.id]
 
-  user_data_base64 = "${data.cloudinit_config.bastion-host-cloudinit.rendered}"
+  user_data_base64 = var.user_data_base64
 
   tags = {
     Name = format("%s%02g", var.name_prefix, count.index)

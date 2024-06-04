@@ -1,5 +1,6 @@
 // Module: terraform-aws-bastion-host
 // Description: main code
+//
 
 
 resource "aws_security_group" "bastion-host-sg" {
@@ -75,7 +76,6 @@ resource "aws_iam_policy" "bastion-host-iam-policy" {
   })
 }
 
-
 resource "aws_iam_policy_attachment" "bastion-host-iam-attachment" {
   name       = "bastion-host-iam-attachment"
   roles      = [aws_iam_role.bastion-host-iam-role.name]
@@ -92,13 +92,21 @@ data "aws_ami" "bastion-host-ami" {
   owners = ["self"]
 }
 
+module "cloudinit" {
+  source "SoleksDataGroup/cloudinit/aws"
+  version = "0.0.1"
+
+  users = var.cloudinit.users
+  groups = var.cloudinit.groups
+}
+
 data "cloudinit_config" "bastion-host-cloudinit" {
   gzip = true
   base64_encode = true
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/templates/bastion-host-cloudinit.yaml.tftpl", {cloudinit_userdata = var.cloudinit_userdata})
+    content = module.cloudinit.userdata
   }
 }
 

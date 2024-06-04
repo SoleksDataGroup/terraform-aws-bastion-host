@@ -94,7 +94,7 @@ data "aws_ami" "bastion-host-ami" {
 
 module "cloudinit" {
   source = "SoleksDataGroup/cloudinit/aws"
-  version = "0.0.1"
+  version = "0.0.2"
 
   users = var.cloudinit_userdata.users
   groups = var.cloudinit_userdata.groups

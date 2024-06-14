@@ -26,6 +26,12 @@ variable "instance_type" {
   default = ""
 }
 
+variable "instance_iam_profile_name" {
+  description = "Service group instance iam profile arn"
+  type = string
+  default = ""
+}
+
 variable "subnet_ids" {
   description = "Bastion host subnet IDs"
   type = list(string)

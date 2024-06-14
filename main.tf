@@ -38,55 +38,6 @@ resource "aws_security_group" "bastion-host-sg" {
   }
 }
 
-resource "aws_iam_role" "bastion-host-iam-role" {
-  name = "bastion-host-iam-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
-resource "aws_iam_policy" "bastion-host-iam-policy" {
-  name        = "bastion-host-iam-policy"
-  description = "Provides permissions to get an access to S3 bucket"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "s3:*",
-        ]
-        Effect   = "Allow"
-        Resource = [
-          "arn:aws:s3:::talkscriber-infra",
-          "arn:aws:s3:::talkscriber-infra/*" ]
-      },
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "bastion-host-iam-attachment" {
-  name       = "bastion-host-iam-attachment"
-  roles      = [aws_iam_role.bastion-host-iam-role.name]
-  policy_arn = aws_iam_policy.bastion-host-iam-policy.arn
-}
-
-resource "aws_iam_instance_profile" "bastion-host-profile" {
-  name = "bastion-host-profile"
-  role = aws_iam_role.bastion-host-iam-role.name
-}
-
 data "aws_ami" "bastion-host-ami" {
   name_regex = var.ami_name
   owners = ["self"]
@@ -98,7 +49,7 @@ resource "aws_instance" "bastion-host" {
   ami = data.aws_ami.bastion-host-ami.id
   instance_type = var.instance_type
 
-  iam_instance_profile = aws_iam_instance_profile.bastion-host-profile.name
+  iam_instance_profile = var.instance_iam_profile_name
 
   subnet_id = var.subnet_ids[count.index]
 

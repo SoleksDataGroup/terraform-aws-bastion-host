@@ -66,7 +66,8 @@ resource "aws_instance" "bastion-host" {
 resource "aws_eip" "bastion-host-eip" {
   count = length(var.subnet_ids)
 
-  vpc = true
+  domain = "vpc"
+
 
   instance = aws_instance.bastion-host[count.index].id
 }

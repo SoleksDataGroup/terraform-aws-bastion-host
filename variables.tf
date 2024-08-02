@@ -38,10 +38,16 @@ variable "subnet_ids" {
   default = []
 }
 
-variable "dns_zone_id" {
-  description = "Bastion host DNS zone id"
+variable "public_dns_zone_id" {
+  description = "Bastion host public DNS zone id"
   type = string
-  default = ""
+  default = null
+}
+
+variable "private_dns_zone_id" {
+  description = "Bastion host private DNS zone id"
+  type = string
+  default = null
 }
 
 variable "tags" {

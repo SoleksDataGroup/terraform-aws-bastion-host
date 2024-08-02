@@ -68,17 +68,27 @@ resource "aws_eip" "bastion-host-eip" {
 
   domain = "vpc"
 
-
   instance = aws_instance.bastion-host[count.index].id
 }
 
-resource "aws_route53_record" "bastion-host-resource-record" {
-  count = length(var.subnet_ids)
+resource "aws_route53_record" "bastion-host-pub-resource-record" {
+  count = var.public_dns_zone_id == null ? 0 : length(var.subnet_ids)
 
-  zone_id = var.dns_zone_id
+  zone_id = var.public_dns_zone_id
 
   name = format("%s%02g", var.name_prefix, count.index)
   type = "A"
   ttl = 60
   records = [aws_eip.bastion-host-eip[count.index].public_ip]
+}
+
+resource "aws_route53_record" "bastion-host-private-resource-record" {
+  count = var.private_dns_zone_id == null ? 0 : length(var.subnet_ids)
+
+  zone_id = var.private_dns_zone_id
+
+  name = format("%s%02g", var.name_prefix, count.index)
+  type = "A"
+  ttl = 60
+  records = [aws_instance.bastion-host[count.index].private_ip]
 }
